@@ -1,0 +1,65 @@
+version: "3.8"
+
+services:
+
+  api:
+    container_name: "admin-api"
+    command: python -m api
+    env_file:
+      - ".env"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - "./src:/opt/src:ro"
+      - "./api:/opt/api:ro"
+    depends_on:
+      - db
+
+  migrations:
+    container_name: "admin-migrations"
+    command: python -m migrations
+    env_file:
+      - ".env"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - "./src:/opt/src:ro"
+      - "./migrations:/opt/migrations:rw"
+      - "./alembic.ini:/opt/alembic.ini"
+    depends_on:
+      - db
+
+  auth:
+    container_name: "admin-auth"
+    command: python -m auth
+    env_file:
+      - ".env"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - "./src:/opt/src:ro"
+      - "./auth:/opt/auth:ro"
+    depends_on:
+      - db
+
+  db:
+    container_name: "admin-db"
+    image: postgres:16-alpine3.19
+    hostname: "admin"
+    env_file:
+      - ".env"
+
+  server:
+    container_name: "admin-nginx"
+    image: nginx:1.25.3-alpine3.18
+    ports:
+      - "80:80"
+    volumes:
+      - "./conf.d/site.conf:/etc/nginx/conf.d/site.conf:ro"
+      - "./log:/var/log/nginx:rw"
+    depends_on:
+      - api
+      - auth
