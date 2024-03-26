@@ -10,11 +10,15 @@ from src.models import User
 from src.schemas import UserDetail, UserRegisterForm, TokenPairDetail, UserLoginForm, TokenRefreshForm
 from src.utils import PasswordContext, jwt, oauth2
 
-app = FastAPI()
+app = FastAPI(
+    docs_url="/auth/docs",
+    redoc_url="/auth/redoc",
+    openapi_url="/auth/openapi.json"
+)
 
 
 @app.post(
-    path="/register",
+    path="/auth/register",
     status_code=status.HTTP_201_CREATED,
     response_model=UserDetail
 )
@@ -35,7 +39,7 @@ async def register(session: DBSession, data: UserRegisterForm):
 
 
 @app.post(
-    path="/login",
+    path="/auth/login",
     status_code=status.HTTP_200_OK,
     response_model=TokenPairDetail
 )
@@ -63,7 +67,7 @@ async def login(session: DBSession, data: UserLoginForm):
 
 
 @app.post(
-    path="/refresh",
+    path="/auth/refresh",
     response_model=TokenPairDetail,
     status_code=status.HTTP_200_OK
 )
@@ -87,7 +91,7 @@ async def refresh(data: TokenRefreshForm):
 
 
 @app.get(
-    path="/login/google",
+    path="/auth/login/google",
     response_class=RedirectResponse,
     status_code=status.HTTP_307_TEMPORARY_REDIRECT
 )

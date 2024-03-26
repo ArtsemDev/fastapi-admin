@@ -45,6 +45,21 @@ services:
     depends_on:
       - db
 
+  frontend:
+    container_name: "admin-frontend"
+    command: python -m frontend
+    env_file:
+      - ".env"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - "./src:/opt/src:ro"
+      - "./frontend:/opt/frontend:ro"
+      - "./templates:/opt/templates:ro"
+    depends_on:
+      - db
+
   db:
     container_name: "admin-db"
     image: postgres:16-alpine3.19
@@ -60,6 +75,8 @@ services:
     volumes:
       - "./conf.d/site.conf:/etc/nginx/conf.d/site.conf:ro"
       - "./log:/var/log/nginx:rw"
+      - "./static:/opt/static:ro"
+      - "./templates:/opt/templates:ro"
     depends_on:
       - api
       - auth

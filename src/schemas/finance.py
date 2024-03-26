@@ -1,3 +1,4 @@
+from datetime import date
 from decimal import Decimal
 
 from pydantic import Field, PositiveInt
@@ -34,4 +35,8 @@ class FinanceDetail(FinanceCreateForm):
     id: PositiveInt = Field(
         default=...,
         title="Finance ID"
+    )
+    date_created: date = Field(
+        default=...,
+        title="Finance Date"
     )

@@ -1,11 +1,11 @@
+from datetime import date, datetime
 from typing import TYPE_CHECKING
 
-from email_validator import EmailSyntaxError
-from sqlalchemy import Column, BIGINT, VARCHAR, CheckConstraint, CHAR, ForeignKey, DECIMAL, Enum
-from sqlalchemy.orm import validates, relationship
+from sqlalchemy import Column, BIGINT, VARCHAR, CheckConstraint, CHAR, ForeignKey, DECIMAL, Enum, DATE
+from sqlalchemy.orm import relationship
 
-from .base import Base
 from src.enum import ExpenseType
+from .base import Base
 
 __all__ = [
     "User",
@@ -47,6 +47,7 @@ class Finance(Base):
         user_id: int
         amount: float
         type: ExpenseType
+        date_created: date
         user: User
     else:
         id = Column(BIGINT, primary_key=True)
@@ -62,4 +63,5 @@ class Finance(Base):
         )
         amount = Column(DECIMAL(scale=2), nullable=False)
         type = Column(Enum(ExpenseType), nullable=False, index=True)
+        date_created = Column(DATE, nullable=False, default=lambda: datetime.now().date())
         user = relationship(argument=User, back_populates="finances")
